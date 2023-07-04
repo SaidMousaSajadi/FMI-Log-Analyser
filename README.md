@@ -2,7 +2,7 @@
 By taking an FMI Dynamic image, the FMI Log Analyzer software can simulate the complex fractures of the well by analyzing the edges and processing them, and determine their relationship with each other and help to choose the best fractures. You need **GNU Octave** installed for this operation. Let's get it installed and working with it:
 
 <p align="center">
-  <img src="https://github.com/yasharsajadi/RPMG2D/blob/master/A%20Sample.png" width="800">
+  <img src="https://github.com/yasharsajadi/FMI-Log-Analyser/blob/main/Sample.png" width="800">
 </p>
 
 
