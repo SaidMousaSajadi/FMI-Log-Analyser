@@ -26,8 +26,36 @@ function Processing(STR,obj)
       set(obj,'string',' Ready')
       set(obj,'backgroundcolor',[0.785 1 0.785])
     otherwise
-      set(obj,'string',STR)
-      set(obj,'backgroundcolor',[0.785 1 0.785])
+      set(obj,'string',[" " STR])
+      set(obj,'backgroundcolor',[1 0.863 0.666])
+  end
+end
+
+function RGB = IMG2RGB(IM,M,OBJ)
+  if ~islogical(IM)
+    if isempty(M)
+      if ndims(IM) == 2
+        [IND , M] = gray2ind(IM) ;
+        RGB = ind2rgb(IND,M) ;
+      elseif ndims(IM) == 3 && size(IM,3) == 3
+        RGB = IM ;
+      end
+    else
+      RGB = ind2rgb(IM,M) ;
+    end
+  else
+    RGB = [] ;
+    Processing(" Imported Binary",OBJ)
+  end
+end
+
+function GRAY = RGB2GRAY(RGB)
+  GRAY = rgb2gray(RGB) ;
+  switch class(GRAY)
+    case {'uint8'}
+      GRAY = double(GRAY)/255 ;
+    case {'uint16'}
+      GRAY = double(GRAY)/65535 ;
   end
 end
 
@@ -139,7 +167,7 @@ end
 
 function Set_Fracture_Label(Ax,IM,Cluster,X,Kindex,cycle,Quality,Method,FlagFracture,FlagLabel,FracturesColor,FlagColorScale)
   if FlagColorScale
-    IM_G = double(rgb2gray(IM))/255 ; % GrayScale
+    IM_G = RGB2GRAY(h.IM) ; % GrayScale
     imshow(IM_G,'Parent',Ax) ;
   else
     imshow(IM,'Parent',Ax) ;
@@ -202,7 +230,7 @@ function h = ProcessOnBase(h)
 end
 
 function h = ProcessOnEdge(h)
-  Crude = double(rgb2gray(h.IM))/255 ;
+  Crude = RGB2GRAY(h.IM) ;
   % Maybe Append: 1)CNN , 2)Wavelet Decomposition
   if h.FlagDenoise == 1
     f = fspecial("Gaussian", [1 , 1] , 2);
@@ -265,8 +293,8 @@ function h = ProcessOn3D(h)
   colormap(h.Ax4,h.Map)
   ##colormap(Ax3D,'gray')
   
-  patch(h.Ax4,X(1,:),Y(1,:),Z(1,:),'k','facecolor',[0.145 0.145 0.145],'edgecolor','none')
-  patch(h.Ax4,X(end,:),Y(end,:),Z(end,:),'k','facecolor',[0.145 0.145 0.145],'edgecolor','none')
+  patch(h.Ax4,X(1,:),Y(1,:),Z(1,:),'k','facecolor',[0.65 0.65 0.65],'edgecolor','none')
+  patch(h.Ax4,X(end,:),Y(end,:),Z(end,:),'k','facecolor',[0.65 0.65 0.65],'edgecolor','none')
   
 
   if h.FlagCluster & get(h.FracturesCheck,'value')
@@ -395,8 +423,8 @@ end
 
 root.Quality = 0.8 ; % Quality Control
 root.Method = 'nlin' ; % Method for Regression
-root.FracturesColor = 'blue' ;
-root.GraphColor = "ykwr" ;
+root.FracturesColor = 'blue' ; % Fracture Color
+root.GraphColor = "ykwr" ; % Graph Color
 
 
 
@@ -426,37 +454,43 @@ function Update_UI(obj,init = false)
   case {h.Open}
     Processing('p',h.Process)
     [h.FileName, h.FilePath, h.FileIndex] = uigetfile({"*.jpeg;*.jpg;*.tiff;*.tif;*.png", "Supported Picture Formats";"*.png", "Portable Network Graphics";"*.jpeg ; *.jpg", "Joint Photographic Experts Group";"*.tif ; *.tiff", "Tagged Image File Format"},"Import A Dynamic FMI Image") ; 
+    Processing('r',h.Process)
     if (h.FileIndex) ~= 0
+      Processing('p',h.Process)
       NameSpl = strsplit(h.FileName,".") ;
       switch lower(NameSpl{1,end})
-        case {'png','jpg','jpeg','tiff','tif'} % Better Work imfinfo
-          [h.IM , ~]= imread([h.FilePath h.FileName]) ;
-          h.Gray = colormap(gray(16)) ;
-          [~ , h.CMap] = rgb2ind(h.IM) ;
-          if h.FlagColorScale
-            h.Map = h.Gray ;
-          else
-            h.Map = h.CMap ;
-          end
-          h.IM_G = double(rgb2gray(h.IM))/255 ; % GrayScale
-          h.IM_G_Interp = GeneInterp(h.IM_G) ; % Interpolation
-          h = ProcessOnBase(h) ;
-          h = ProcessOnEdge(h) ;
-          h = ProcessOnExport(h) ;
-          linkaxes([h.Ax1 , h.Ax2 , h.Ax3]) ;
-          h.Axis = axis(h.Ax1) ;
-          h.FlagIM = 1 ;
-          h.FlagCaliper = 0 ;
-          h.FlagGraph = 0 ;
-          h.FlagSimu = 0 ;
-          h.FlagCluster = 0 ;
-          if h.Flag3D
-            h = ProcessOn3D(h) ;
+        case {'png','jpg','jpeg','tiff','tif'} %
+          [h.IM , M]= imread([h.FilePath h.FileName]) ;
+          h.IM = IMG2RGB(h.IM,M,h.Process) ;
+          if ndims(h.IM) == 3
+            h.Gray = colormap(gray(256)) ;
+            [~ , h.CMap] = rgb2ind(h.IM) ;
+            if h.FlagColorScale
+              h.Map = h.Gray ;
+            else
+              h.Map = h.CMap ;
+            end 
+            h.IM_G = RGB2GRAY(h.IM) ; % GrayScale
+            h.IM_G_Interp = GeneInterp(h.IM_G) ; % Interpolation
+            h = ProcessOnBase(h) ;
+            h = ProcessOnEdge(h) ;
+            h = ProcessOnExport(h) ;
+            linkaxes([h.Ax1 , h.Ax2 , h.Ax3]) ;
+            h.Axis = axis(h.Ax1) ;
+            h.FlagIM = 1 ;
+            h.FlagCaliper = 0 ;
+            h.FlagGraph = 0 ;
+            h.FlagSimu = 0 ;
+            h.FlagCluster = 0 ;
+            if h.Flag3D
+              h = ProcessOn3D(h) ;
+            end
+            Processing('r',h.Process)
           end
           guidata(gcf,h) % update handles
       end
     end
-    Processing('r',h.Process)
+    
 
   case {h.Home}
     Processing('p',h.Process)
@@ -540,7 +574,7 @@ function Update_UI(obj,init = false)
       Processing('p',h.Process)
       Dim = axis(h.Ax1) ;
       h.IM = h.IM(ceil(Dim(3))+1:fix(Dim(4))-1,ceil(Dim(1))+1:fix(Dim(2))-1,:) ;
-      h.IM_G = double(rgb2gray(h.IM))/255 ; % GrayScale
+      h.IM_G = RGB2GRAY(h.IM) ; % GrayScale
       h.IM_G_Interp = GeneInterp(h.IM_G) ; % Interpolation
       [~ , h.CMap] = rgb2ind(h.IM) ;
       guidata(gcf,h) % update handles
@@ -1166,7 +1200,7 @@ uimenu(root.H, "label", "&Documentation", "accelerator", "","callback", "system(
 uimenu(root.H, "label", "About Me", "accelerator", "","callback", "web('https://www.linkedin.com/in/seyed-mousa-sajadi-8284b1124/','-new')"); %
 
 
-root.Process = uicontrol(root.Fig,'style','text','units','normalized','position',[0.0 0.0 0.05 0.025],'string',' Ready','backgroundcolor',[0.785 1 0.785],"horizontalalignment",'left','fontsize',7);
+root.Process = uicontrol(root.Fig,'style','text','units','normalized','position',[0.0 0.0 0.425 0.025],'string',' Ready','backgroundcolor',[0.785 1 0.785],"horizontalalignment",'left','fontsize',7);
 
 
 guidata(gcf,root) ;
