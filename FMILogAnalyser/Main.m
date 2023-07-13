@@ -50,12 +50,16 @@ function RGB = IMG2RGB(IM,M,OBJ)
 end
 
 function GRAY = RGB2GRAY(RGB)
-  GRAY = rgb2gray(RGB) ;
-  switch class(GRAY)
-    case {'uint8'}
-      GRAY = double(GRAY)/255 ;
-    case {'uint16'}
-      GRAY = double(GRAY)/65535 ;
+  if ~islogical(RGB)
+    GRAY = rgb2gray(RGB) ;
+    switch class(GRAY)
+      case {'uint8'}
+        GRAY = double(GRAY)/255 ;
+      case {'uint16'}
+        GRAY = double(GRAY)/65535 ;
+    end
+  else
+    GRAY = RGB(:,:,1) ;
   end
 end
 
