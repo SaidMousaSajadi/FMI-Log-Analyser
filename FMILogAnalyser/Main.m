@@ -297,8 +297,8 @@ function h = ProcessOn3D(h)
   colormap(h.Ax4,h.Map)
   ##colormap(Ax3D,'gray')
   
-  patch(h.Ax4,X(1,:),Y(1,:),Z(1,:),'k','facecolor',[0.65 0.65 0.65],'edgecolor','none')
-  patch(h.Ax4,X(end,:),Y(end,:),Z(end,:),'k','facecolor',[0.65 0.65 0.65],'edgecolor','none')
+  patch(h.Ax4,X(1,:),Y(1,:),Z(1,:),'k','facecolor',[0.145 0.145 0.145],'edgecolor','none')
+  patch(h.Ax4,X(end,:),Y(end,:),Z(end,:),'k','facecolor',[0.145 0.145 0.145],'edgecolor','none')
   
 
   if h.FlagCluster & get(h.FracturesCheck,'value')
