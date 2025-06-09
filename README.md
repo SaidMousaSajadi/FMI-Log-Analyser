@@ -4,7 +4,7 @@ This project is licensed under a custom **Academic Non-Commercial License (ANCL)
 
 📌 Use is permitted for **academic and research purposes only**.  
 🚫 **Commercial use is strictly prohibited** without prior written permission.  
-© 2025 [Said Mousa Sajaid and Elahe Shahrian]
+© 2025 [Said Mousa Sajadi and Elahe Shahrian]
 
 
 # FMI Log Analyser
