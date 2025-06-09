@@ -1,3 +1,12 @@
+## License
+
+This project is licensed under a custom **Academic Non-Commercial License (ANCL)**.
+
+📌 Use is permitted for **academic and research purposes only**.  
+🚫 **Commercial use is strictly prohibited** without prior written permission.  
+© 2025 [Said Mousa Sajaid and Elahe Shahrian]
+
+
 # FMI Log Analyser
 By taking an FMI Dynamic image, the FMI Log Analyzer software can simulate the complex fractures of the well by analyzing the edges and processing them, and determine their relationship with each other and help to choose the best fractures. You need **GNU Octave** installed for this operation. Let's get it installed and working with it:
 
